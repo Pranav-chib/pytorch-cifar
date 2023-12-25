@@ -66,6 +66,9 @@ def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
+def wish(self, input):
+    return input * torch.sigmoid(input) * torch.tanh(F.softplus(input))  
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -85,7 +88,7 @@ class BasicBlock(nn.Module):
 
         out = self.conv1(x)
         out = self.bn1(out)
-        out = self.relu(out)
+        out = self.wish(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
@@ -141,7 +144,7 @@ class CifarResNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
-        x = self.relu(x)
+        x = self.wish(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
