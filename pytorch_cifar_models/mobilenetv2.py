@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 import torch
 from torch import nn
+import torch.nn.functional as F
 from torch import Tensor
 try:
     from torch.hub import load_state_dict_from_url
@@ -74,6 +75,8 @@ def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> 
         new_v += divisor
     return new_v
 
+def wish(input):
+    return input * torch.sigmoid(input) * torch.tanh(F.softplus(input))
 
 class ConvBNActivation(nn.Sequential):
     def __init__(
@@ -91,7 +94,7 @@ class ConvBNActivation(nn.Sequential):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         if activation_layer is None:
-            activation_layer = nn.ReLU6
+            activation_layer = wish
         super(ConvBNReLU, self).__init__(
             nn.Conv2d(in_planes, out_planes, kernel_size, stride, padding, dilation=dilation, groups=groups,
                       bias=False),
